@@ -6,47 +6,24 @@ const { ApolloServer, gql } = require("apollo-server");
 const typeDefs = gql`
   # Comments in GraphQL are defined with the hash (#) symbol.
 
-  # This "Character" type can be used in other type declarations.
-  type Character {
-    id: Int
-    name: String
-    status: String
-    episodes: [Episode]
-  }
-
-  type Episode {
-    id: Int
-    name: String
+  # This "Book" type can be used in other type declarations.
+  type Book {
+    title: String
+    author: String
   }
 
   # The "Query" type is the root of all GraphQL queries.
   # (A "Mutation" type will be covered later on.)
   type Query {
-    characters: [Character]
-    character(id: Int): Character
-    episodes: [Episode]
+    books: [Book]
   }
 `;
 
+// Resolvers define the technique for fetching the types in the
+// schema.  We'll retrieve books from the "books" array above.
 const resolvers = {
   Query: {
-    characters: () => fetchCharacters(),
-    character: (_, args) => fetchCharacter(args.id),
-    episodes: () => fetchEpisodes()
-  },
-  Character: {
-    episodes: async obj => {
-      const characterEpisodes = obj.episode || [];
-      const episodes = await fetchEpisodes();
-
-      if (characterEpisodes.length === 0) {
-        return [];
-      }
-
-      return characterEpisodes.map(episodeUrl => {
-        return mapEpisodeUrlToEpisode(episodes, episodeUrl);
-      });
-    }
+    books: () => books
   }
 };
 
@@ -61,9 +38,7 @@ server.listen().then(({ url }) => {
   console.log(`🚀  Server ready at ${url}`);
 });
 
-// This is a (sample) collection of books we'll be able to query
-// the GraphQL server for.  A more complete example might fetch
-// from an existing data source like a REST API or database.
+// mock data for characters
 const characters = [
   {
     name: "Rick Sanchez",
@@ -85,6 +60,7 @@ const characters = [
   }
 ];
 
+// mock data for episodes
 const episodes = [
   {
     name: "Pilot",
