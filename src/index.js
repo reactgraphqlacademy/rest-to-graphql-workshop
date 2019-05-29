@@ -96,7 +96,7 @@ function mapEpisodeUrlToEpisode(episodes, episodeUrl) {
 
 function fetchEpisodes() {
   // More info about the fetch function? https://github.com/bitinn/node-fetch#json
-  return fetch("https://rickandmortyapi.com/api/character/")
+  return fetch("https://rickandmortyapi.com/api/episode/")
     .then(res => res.json())
     .then(json => json.results);
 }
