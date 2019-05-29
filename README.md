@@ -16,7 +16,6 @@ This exercise is part of the [React GraphQL Academy](http://reactgraphql.academy
 - Query a list with all the character names
 - Query how many characters are in the system
 - Query a single characther by id (try id equals 1) and get its name
-- How many currencies in the system?
 - How many types do we have in the system?
 
 ## Exercise part 2
