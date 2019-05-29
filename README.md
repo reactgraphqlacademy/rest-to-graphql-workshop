@@ -32,9 +32,26 @@ We are going to create our own GraphQL API on top of this [Rick and Morty API](h
 
 - [ ] 1. Create a Character type in your schema. Here is the [documentation of the character endpont](https://rickandmortyapi.com/documentation/#character-schema).
 
-- [ ] 2. Create as Episode type in your schema. Here is the [documentation of the episode endpont](https://rickandmortyapi.com/documentation/#episode-schema).
+- [ ] 2. Create an Episode type in your schema. Here is the [documentation of the episode endpont](https://rickandmortyapi.com/documentation/#episode-schema).
 
-### Bonus exercise
+- [ ] 3. Create a relationship between Episode type in your schema. Here is the [documentation of the episode endpont](https://rickandmortyapi.com/documentation/#episode-schema). Hints
+
+  - You need to add a Character type in the resolvers object and an episodes field to it. Similar to the Author type and books field in the example [https://www.apollographql.com/docs/apollo-server/essentials/data#resolver-map](map) the episodes
+  - You can filter the episodes in our case using the `mapEpisodeUrlToEpisode` defined at the bottom of this file `src/index.js` of this project.
+
+- [ ] 4. Replace the mock data using https://rickandmortyapi.com/documentation/#rest.
+
+  - You can use the `fetchEpisodes` and `fetchCharacters` defined at the bottom of this file `src/index.js`
+  - You'll need to replace mock data in 3 different places:
+    - Query characters
+    - Query episodes
+    - Field episodes in the Character type
+
+- [ ] 5. Create a query that returns a single Character given an id. You need to fetch the character using `https://rickandmortyapi.com/documentation/#get-a-single-character`
+
+### Bonus
+
+Create a field in Episode that returns a list the Character types in that episode using the [REST API](https://rickandmortyapi.com/documentation/#rest)
 
 ## Articles and links
 
