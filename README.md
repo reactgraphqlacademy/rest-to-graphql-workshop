@@ -30,6 +30,8 @@ We are going to create our own GraphQL API on top of this [Rick and Morty API](h
 - `yarn install` or `npm install`
 - `yarn start` or `npm start`
 
+### Tasks
+
 - [ ] 1. Create a Character type in your schema. Here is the [documentation of the character endpont](https://rickandmortyapi.com/documentation/#character-schema).
 
 - [ ] 2. Create an Episode type in your schema. Here is the [documentation of the episode endpont](https://rickandmortyapi.com/documentation/#episode-schema).
