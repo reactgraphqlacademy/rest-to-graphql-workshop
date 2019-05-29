@@ -36,7 +36,7 @@ We are going to create our own GraphQL API on top of this [Rick and Morty API](h
 
 - [ ] 3. Create a relationship between Episode type in your schema. Here is the [documentation of the episode endpont](https://rickandmortyapi.com/documentation/#episode-schema). Hints
 
-  - You need to add a Character type in the resolvers object and an episodes field to it. Similar to the Author type and books field in the example [https://www.apollographql.com/docs/apollo-server/essentials/data#resolver-map](map) the episodes
+  - You need to add a Character type in the resolvers object and an episodes field to it. Similar to the Author type and books field in the [documentation](https://www.apollographql.com/docs/apollo-server/essentials/data#resolver-map)
   - You can filter the episodes in our case using the `mapEpisodeUrlToEpisode` defined at the bottom of this file `src/index.js` of this project.
 
 - [ ] 4. Replace the mock data using https://rickandmortyapi.com/documentation/#rest.
