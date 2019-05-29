@@ -1,0 +1,29 @@
+{
+  "name": "rest-to-graphql-workshop",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "node_modules/.bin/nodemon src/index.js",
+    "start-babel": "node_modules/.bin/nodemon -- node_modules/.bin/babel-node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reactgraphqlacademy/rest-to-graphql-workshop.git"
+  },
+  "author": "React Graphql Academy",
+  "license": "GPL version 3",
+  "bugs": {
+    "url": "https://github.com/reactgraphqlacademy/rest-to-graphql-workshop/issues"
+  },
+  "homepage": "https://github.com/reactgraphqlacademy/rest-to-graphql-workshop#readme",
+  "dependencies": {
+    "apollo-server": "^2.5.0",
+    "graphql": "^14.3.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/node": "^7.4.5",
+    "nodemon": "^1.19.1"
+  }
+}
