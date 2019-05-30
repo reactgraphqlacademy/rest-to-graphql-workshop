@@ -12,11 +12,9 @@ This exercise is part of the [React GraphQL Academy](http://reactgraphql.academy
 
 [https://rickandmortyapi.com/graphql/](https://rickandmortyapi.com/graphql/)
 
-- Query a list of characters are in the system
 - Query a list with all the character names
 - Query how many characters are in the system
 - Query a single characther by id (try id equals 1) and get its name
-- How many currencies in the system?
 - How many types do we have in the system?
 
 ## Exercise part 2
@@ -30,13 +28,15 @@ We are going to create our own GraphQL API on top of this [Rick and Morty API](h
 - `yarn install` or `npm install`
 - `yarn start` or `npm start`
 
+### Tasks
+
 - [ ] 1. Create a Character type in your schema. Here is the [documentation of the character endpont](https://rickandmortyapi.com/documentation/#character-schema).
 
 - [ ] 2. Create an Episode type in your schema. Here is the [documentation of the episode endpont](https://rickandmortyapi.com/documentation/#episode-schema).
 
-- [ ] 3. Create a relationship between Episode type in your schema. Here is the [documentation of the episode endpont](https://rickandmortyapi.com/documentation/#episode-schema). Hints
+- [ ] 3. Create a relationship between Episode type in your schema. Please have a look at the [documentation of the episode endpont](https://rickandmortyapi.com/documentation/#episode-schema) to see how to get the episodes of a given character (heads up! we are calling the field in Characters `episodes` but the REST API is calling it `episode`). Hints
 
-  - You need to add a Character type in the resolvers object and an episodes field to it. Similar to the Author type and books field in the example [https://www.apollographql.com/docs/apollo-server/essentials/data#resolver-map](map) the episodes
+  - You need to add a Character type in the resolvers object and an episodes field to it. Similar to the Author type and books field in the [documentation](https://www.apollographql.com/docs/apollo-server/essentials/data#resolver-map)
   - You can filter the episodes in our case using the `mapEpisodeUrlToEpisode` defined at the bottom of this file `src/index.js` of this project.
 
 - [ ] 4. Replace the mock data using https://rickandmortyapi.com/documentation/#rest.
