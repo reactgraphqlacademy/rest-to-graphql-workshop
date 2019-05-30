@@ -1,48 +1,108 @@
+// We use this `fetch` to fetch data from the REST API
+// Feel free to replace it with Axios or any other
+// I like fetch because it's standard https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
 const fetch = require("node-fetch");
+
+// We are using the (default) Apollo Express server https://github.com/apollographql/apollo-server/blob/master/packages/apollo-server/src/index.ts
+// gql will transform the SDL (Schema Definition Language) into AST (Abstract Syntax Tree)
+//    - https://www.apollographql.com/docs/apollo-server/essentials/schema/#schema-definition-language
+//    - https://github.com/apollographql/graphql-tag#gql
+//    - https://astexplorer.net/
+// AST is used by graphql (https://www.npmjs.com/package/graphql) to validate your queries.
+// graphql is a dependency of Apollo Server https://www.apollographql.com/docs/apollo-server/getting-started/#step-2-install-dependencies
 const { ApolloServer, gql } = require("apollo-server");
 
-// Type definitions define the "shape" of your data and specify
-// which ways the data can be fetched from the GraphQL server.
+// Notice GraphQL is a specification https://graphql.github.io/graphql-spec/, it's not a tool or framework.
+// The GraphQL reference implementation is written in JavaScript https://www.npmjs.com/package/graphql,
+// but there are many other implementations in different languages https://www.graphql.org/code/
+
+// Type definitions define the "shape" of your data
 const typeDefs = gql`
   # Comments in GraphQL are defined with the hash (#) symbol.
 
-  # This "Character" type can be used in other type declarations.
   type Character {
-    id: Int
+    # id is a Field https://graphql.github.io/learn/queries/#fields in Character type. ID is a type https://www.graphql.org/learn/schema/#scalar-types
+    id: ID
+
+    # name is a Field https://graphql.github.io/learn/queries/#fields in Character type. String is a type https://www.graphql.org/learn/schema/#scalar-types
     name: String
+
+    # status is a Field https://graphql.github.io/learn/queries/#fields in Character type. String is a type https://www.graphql.org/learn/schema/#scalar-types
     status: String
+
+    # episodes is a Field https://graphql.github.io/learn/queries/#fields in Character type.
+    # Here we are creating an explicit relationship between Character type and Episode type
     episodes: [Episode]
   }
 
+  # Types can be used in other type declarations. E.g. we use the Episode type in Character type episodes Field
   type Episode {
-    id: Int
+    # id is a Field https://graphql.github.io/learn/queries/#fields in Episode type. ID is a type https://www.graphql.org/learn/schema/#scalar-types
+    id: ID
+
+    # name is a Field https://graphql.github.io/learn/queries/#fields in Episode type. String is a type https://www.graphql.org/learn/schema/#scalar-types
     name: String
   }
 
   # The "Query" type is the root of all GraphQL queries.
-  # (A "Mutation" type will be covered later on.)
+  # Notice the "Query" is simply an object type like Character or Episode (https://graphql.github.io/learn/schema/#object-types-and-fields)
   type Query {
+    # characters is a Field https://graphql.github.io/learn/queries/#fields in Query type
     characters: [Character]
+
+    # character is a Field https://graphql.github.io/learn/queries/#fields in Query type
+    # notice character has an argument https://graphql.github.io/learn/schema/#arguments
     character(id: Int): Character
+
+    # episodes is a Field https://graphql.github.io/learn/queries/#fields in Query type
     episodes: [Episode]
   }
 `;
 
+// Resolvers connect types with a data source/s.
+// They “resolve” GraphQL operations into data
 const resolvers = {
   Query: {
+    // This resolves the Field "characters" in the Query type
     characters: () => fetchCharacters(),
+
+    // This resolves the Field "character" in the Query type
+    // Each resolver function has 4 arguments: (parent_object, args, context, info)
+    // https://www.apollographql.com/docs/graphql-tools/resolvers/#resolver-function-signature
+    // We only need the second argument and I'm naming the first one with an underscore (_) because we access the arguments by its position
+    // Feel free to do the same or change the name of the arguments
     character: (_, args) => fetchCharacter(args.id),
-    episodes: () => fetchEpisodes()
+
+    // This resolves the Field "episodes" in the Query type.
+    // Notice we are not using any of the 4 resolver arguments (obj, args, context, info),
+    // I'm only adding them here for you to reinforce they are always there.
+    // In this case you could simply do `episodes: () => fetchEpisodes()`
+    episodes: (obj, args, context, info) => fetchEpisodes()
   },
   Character: {
-    episodes: async obj => {
+    // We are only using 1 of the 4 arguments but I want to show you again the resolver function signature :)
+    episodes: async (obj, args, context, info) => {
+      // Heads up! Don't overlook this bit, notice the obj argument in the resolver is the parent Field "Character".
+      // We don't know ahead of time which Character is that one. When this resolver is invoked the obj argument will point
+      // to whatever Character is resolved in the parent Field. Example, in the following query the argument obj will be Rick Sanchez
+      // Therefore the obj.episode will return ["https://rickandmortyapi.com/api/episode/1","https://rickandmortyapi.com/api/episode/2", ...and_more]
+      // Full list of Rick's episodes here https://rickandmortyapi.com/api/character/1
+      // query {
+      //   character(id:1) {
+      //     name
+      //     episode {
+      //       name
+      //     }
+      //   }
+      // }
       const characterEpisodes = obj.episode || [];
+
+      // fetchEpisodes returns a promise, notice I'm using async/await
       const episodes = await fetchEpisodes();
 
-      if (characterEpisodes.length === 0) {
-        return [];
-      }
-
+      // Here we map the episode URL with the actual episode data.
+      // There are performance optimizations we are not taking into consideration, performance is not the goal of this exercise.
+      // The goal of this exercise is to help you understand the types and relationships in the GraphQL schema
       return characterEpisodes.map(episodeUrl => {
         return mapEpisodeUrlToEpisode(episodes, episodeUrl);
       });
@@ -55,15 +115,12 @@ const resolvers = {
 // responsible for fetching the data for those types.
 const server = new ApolloServer({ typeDefs, resolvers });
 
-// This `listen` method launches a web-server.  Existing apps
-// can utilize middleware options, which we'll discuss later.
+// This `listen` method launches a web-server.
 server.listen().then(({ url }) => {
   console.log(`🚀  Server ready at ${url}`);
 });
 
-// This is a (sample) collection of books we'll be able to query
-// the GraphQL server for.  A more complete example might fetch
-// from an existing data source like a REST API or database.
+// Mock data used at the beginning of the exercise and replaced at the end with data from the REST API
 const characters = [
   {
     name: "Rick Sanchez",
@@ -85,6 +142,7 @@ const characters = [
   }
 ];
 
+// Mock data used at the beginning of the exercise and replaced at the end with data from the REST API
 const episodes = [
   {
     name: "Pilot",
@@ -96,17 +154,19 @@ const episodes = [
   }
 ];
 
+// helper function
 function getEpisodeIdFromUrl(url) {
   return url && url.split("/").pop();
 }
 
-function mapEpisodeUrlToEpisode(episodes, episodeUrl) {
+// helper function
+function mapEpisodeUrlToEpisode(episodes = [], episodeUrl) {
   return episodes.find(e => e.id == getEpisodeIdFromUrl(episodeUrl));
 }
 
 function fetchEpisodes() {
   // More info about the fetch function? https://github.com/bitinn/node-fetch#json
-  return fetch("https://rickandmortyapi.com/api/character/")
+  return fetch("https://rickandmortyapi.com/api/episode/")
     .then(res => res.json())
     .then(json => json.results);
 }
@@ -124,3 +184,34 @@ function fetchCharacter(id) {
     .then(res => res.json())
     .then(json => json);
 }
+
+// At this point, you might have noticed some code repetition fetching the data from the REST API
+// You can use the Apollo REST Data source https://www.apollographql.com/docs/apollo-server/features/data-sources/#rest-data-source
+// Here there is an article from the Prisma team about wrapping a REST API so you have diversity of opinion https://www.prisma.io/blog/how-to-wrap-a-rest-api-with-graphql-8bf3fb17547d
+
+/*
+
+# You can paste these queries in Playground to test it works
+
+query character {
+  character(id: 1) {
+    name
+  }
+}
+
+query characters {
+  characters {
+    name
+    episodes {
+      name
+    }
+  }
+}
+
+query episodes {
+  episodes {
+    name
+  }
+}
+
+*/
