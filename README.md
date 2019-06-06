@@ -51,7 +51,18 @@ We are going to create our own GraphQL API on top of this [Rick and Morty API](h
 
 ### Bonus
 
-Create a field in Episode that returns a list the Character types in that episode using the [REST API](https://rickandmortyapi.com/documentation/#rest)
+- Create the types and resolvers so the following query works:
+
+```
+query episode {
+  episode(id: 1) {
+    name
+    characters {
+      name
+    }
+  }
+}
+```
 
 ## Articles and links
 

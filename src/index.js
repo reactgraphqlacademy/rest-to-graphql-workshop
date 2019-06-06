@@ -42,6 +42,9 @@ const typeDefs = gql`
 
     # name is a Field https://graphql.github.io/learn/queries/#fields in Episode type. String is a type https://www.graphql.org/learn/schema/#scalar-types
     name: String
+
+    # characters is a Field https://graphql.github.io/learn/queries/#fields in Episode type. Character is a type https://www.graphql.org/learn/schema/#scalar-types
+    characters: [Character]
   }
 
   # The "Query" type is the root of all GraphQL queries.
@@ -56,6 +59,9 @@ const typeDefs = gql`
 
     # episodes is a Field https://graphql.github.io/learn/queries/#fields in Query type
     episodes: [Episode]
+
+    # episode is a Field https://graphql.github.io/learn/queries/#fields in Query type
+    episode(id: Int): Episode
   }
 `;
 
@@ -77,7 +83,18 @@ const resolvers = {
     // Notice we are not using any of the 4 resolver arguments (obj, args, context, info),
     // I'm only adding them here for you to reinforce they are always there.
     // In this case you could simply do `episodes: () => fetchEpisodes()`
-    episodes: (obj, args, context, info) => fetchEpisodes()
+    episodes: (obj, args, context, info) => fetchEpisodes(),
+
+    // This resolves the Field "episode" in the Query type
+    episode: (obj, args) => fetchEpisode(args.id)
+  },
+  Episode: {
+    characters: async obj => {
+      const { characters = [] } = obj;
+      return characters.map(
+        async character => await fetchCharacter(getEpisodeIdFromUrl(character))
+      );
+    }
   },
   Character: {
     // We are only using 1 of the 4 arguments but I want to show you again the resolver function signature :)
@@ -169,6 +186,12 @@ function fetchEpisodes() {
   return fetch("https://rickandmortyapi.com/api/episode/")
     .then(res => res.json())
     .then(json => json.results);
+}
+
+function fetchEpisode(id) {
+  return fetch("https://rickandmortyapi.com/api/episode/" + id)
+    .then(res => res.json())
+    .then(json => json);
 }
 
 function fetchCharacters() {
