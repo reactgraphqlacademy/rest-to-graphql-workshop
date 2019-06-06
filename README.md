@@ -30,7 +30,9 @@ We are going to create our own GraphQL API on top of this [Rick and Morty API](h
 
 ### Tasks
 
-- [ ] 1. Create a Character type in your schema. Here is the [documentation of the character endpont](https://rickandmortyapi.com/documentation/#character-schema).
+- [ ] 1. Create a Character type in your schema. Here is the [documentation of the character endpont](https://rickandmortyapi.com/documentation/#character-schema). 
+    -  [ ] 1.1. Add a `characters` field to the Query type.
+    -  [ ] 1.2. Add a `characters` resolver to the Query's resolvers.
 
 - [ ] 2. Create an Episode type in your schema. Here is the [documentation of the episode endpont](https://rickandmortyapi.com/documentation/#episode-schema).
 
