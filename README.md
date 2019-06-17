@@ -71,7 +71,7 @@ query episode {
 }
 ```
 
-- Once implemented, do you see any potential vulnerability issue on that query?
+- Once implemented, do you see any vulnerability issues on that query?
 
 ## Articles and links
 
