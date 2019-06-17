@@ -94,7 +94,7 @@ const resolvers = {
       return characters.map(fetchCharacterByUrl);
       // previous function without using JavaScript point free
       // return characters.map(
-      //   async characterUrl => await fetchCharacterByUrl(characterUrl)
+      //   async characterUrl => fetchCharacterByUrl(characterUrl)
       // );
     }
   },
