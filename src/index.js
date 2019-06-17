@@ -77,7 +77,7 @@ const resolvers = {
     // https://www.apollographql.com/docs/graphql-tools/resolvers/#resolver-function-signature
     // We only need the second argument and I'm naming the first one with an underscore (_) because we access the arguments by its position
     // Feel free to do the same or change the name of the arguments
-    character: (_, args) => fetchCharacter(args.id),
+    character: (_, args) => fetchCharacterById(args.id),
 
     // This resolves the Field "episodes" in the Query type.
     // Notice we are not using any of the 4 resolver arguments (obj, args, context, info),
@@ -86,19 +86,21 @@ const resolvers = {
     episodes: (obj, args, context, info) => fetchEpisodes(),
 
     // This resolves the Field "episode" in the Query type
-    episode: (obj, args) => fetchEpisode(args.id)
+    episode: (obj, args) => fetchEpisodeById(args.id)
   },
   Episode: {
-    characters: async obj => {
+    characters: obj => {
       const { characters = [] } = obj;
-      return characters.map(
-        async character => await fetchCharacter(getEpisodeIdFromUrl(character))
-      );
+      return characters.map(fetchCharacterByUrl);
+      // previous function without using JavaScript point free
+      // return characters.map(
+      //   async characterUrl => await fetchCharacterByUrl(characterUrl)
+      // );
     }
   },
   Character: {
     // We are only using 1 of the 4 arguments but I want to show you again the resolver function signature :)
-    episodes: async (obj, args, context, info) => {
+    episodes: (obj, args, context, info) => {
       // Heads up! Don't overlook this bit, notice the obj argument in the resolver is the parent Field "Character".
       // We don't know ahead of time which Character is that one. When this resolver is invoked the obj argument will point
       // to whatever Character is resolved in the parent Field. Example, in the following query the argument obj will be Rick Sanchez
@@ -114,15 +116,14 @@ const resolvers = {
       // }
       const characterEpisodes = obj.episode || [];
 
-      // fetchEpisodes returns a promise, notice I'm using async/await
-      const episodes = await fetchEpisodes();
-
-      // Here we map the episode URL with the actual episode data.
+      // Here we map the episode URL and fetch the data from the episode endpoint.
       // There are performance optimizations we are not taking into consideration, performance is not the goal of this exercise.
       // The goal of this exercise is to help you understand the types and relationships in the GraphQL schema
-      return characterEpisodes.map(episodeUrl => {
-        return mapEpisodeUrlToEpisode(episodes, episodeUrl);
-      });
+      return characterEpisodes.map(fetchEpisodeByUrl);
+      // same function without using JavaScript point free:
+      // return characterEpisodes.map(episodeUrl => {
+      //   return fetchEpisodeByUrl(episodeUrl);
+      // });
     }
   }
 };
@@ -137,50 +138,6 @@ server.listen().then(({ url }) => {
   console.log(`🚀  Server ready at ${url}`);
 });
 
-// Mock data used at the beginning of the exercise and replaced at the end with data from the REST API
-const characters = [
-  {
-    name: "Rick Sanchez",
-    id: 1,
-    status: "Alive",
-    episodes: [
-      "https://rickandmortyapi.com/api/episode/1",
-      "https://rickandmortyapi.com/api/episode/2"
-    ]
-  },
-  {
-    name: "Morty Smith",
-    id: 2,
-    status: "Alive",
-    episodes: [
-      "https://rickandmortyapi.com/api/episode/1",
-      "https://rickandmortyapi.com/api/episode/3"
-    ]
-  }
-];
-
-// Mock data used at the beginning of the exercise and replaced at the end with data from the REST API
-const episodes = [
-  {
-    name: "Pilot",
-    id: 1
-  },
-  {
-    name: "Lawnmower Dog",
-    id: 2
-  }
-];
-
-// helper function
-function getEpisodeIdFromUrl(url) {
-  return url && url.split("/").pop();
-}
-
-// helper function
-function mapEpisodeUrlToEpisode(episodes = [], episodeUrl) {
-  return episodes.find(e => e.id == getEpisodeIdFromUrl(episodeUrl));
-}
-
 function fetchEpisodes() {
   // More info about the fetch function? https://github.com/bitinn/node-fetch#json
   return fetch("https://rickandmortyapi.com/api/episode/")
@@ -188,8 +145,14 @@ function fetchEpisodes() {
     .then(json => json.results);
 }
 
-function fetchEpisode(id) {
+function fetchEpisodeById(id) {
   return fetch("https://rickandmortyapi.com/api/episode/" + id)
+    .then(res => res.json())
+    .then(json => json);
+}
+
+function fetchEpisodeByUrl(url) {
+  return fetch(url)
     .then(res => res.json())
     .then(json => json);
 }
@@ -201,9 +164,16 @@ function fetchCharacters() {
     .then(json => json.results);
 }
 
-function fetchCharacter(id) {
+function fetchCharacterById(id) {
   // More info about the fetch function? https://github.com/bitinn/node-fetch#json
   return fetch("https://rickandmortyapi.com/api/character/" + id)
+    .then(res => res.json())
+    .then(json => json);
+}
+
+function fetchCharacterByUrl(url) {
+  // More info about the fetch function? https://github.com/bitinn/node-fetch#json
+  return fetch(url)
     .then(res => res.json())
     .then(json => json);
 }
