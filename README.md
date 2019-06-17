@@ -30,24 +30,29 @@ We are going to create our own GraphQL API on top of this [Rick and Morty API](h
 
 ### Tasks
 
-- [ ] 1. Create a Character type in your schema. Here is the [documentation of the character endpont](https://rickandmortyapi.com/documentation/#character-schema). 
-    -  [ ] 1.1. Add a `characters` field to the Query type.
-    -  [ ] 1.2. Add a `characters` resolver to the Query's resolvers.
+- [ ] 1. Create a `Character` type in your schema. Use the [documentation of the character endpont](https://rickandmortyapi.com/documentation/#character-schema) to define the shape of the `Character` type.
 
-- [ ] 2. Create an Episode type in your schema. Here is the [documentation of the episode endpont](https://rickandmortyapi.com/documentation/#episode-schema).
+  - [ ] 1.1. Add a `characters` field to the Query type. You can replace the `books` field from Query type on line 32 with `characters` since we won't use books. The `characters` field should return an array of [Character].
+  - [ ] 1.2. Add a `characters` resolver to the Query's resolvers. You can replace the `books` field from Query type on line 40 with `characters` since we won't use books. You can return the mock characters array which is in the scope and defined at the bottom of the file index.js.
+  - [ ] 1.3 You should be able to manually test the `characters` query in Playground at [http://localhost:4000/](http://localhost:4000/)
 
-- [ ] 3. Create a relationship between Episode type in your schema. Please have a look at the [documentation of the episode endpont](https://rickandmortyapi.com/documentation/#episode-schema) to see how to get the episodes of a given character (heads up! we are calling the field in Characters `episodes` but the REST API is calling it `episode`). Hints
+- [ ] 2. Create an `Episode` type in your schema. Use the [documentation of the episode endpont](https://rickandmortyapi.com/documentation/#episode-schema) to define the shape of the `Episode` type. Here you are practicing what you've learned on the previous task (1).
 
-  - You need to add a Character type in the resolvers object and an episodes field to it. Similar to the Author type and books field in the [documentation](https://www.apollographql.com/docs/apollo-server/essentials/data#resolver-map)
-  - You can filter the episodes in our case using the `mapEpisodeUrlToEpisode` defined at the bottom of this file `src/index.js` of this project.
+  - [ ] 2.1. Add an `episodes` field to the Query type. The `episodes` field should return an array of [Episode]
+  - [ ] 2.2. Add an `episodes` resolver to the Query's resolvers. You can return the mock episodes array which is in the scope and defined at the bottom of the file index.js.
+  - [ ] 2.3 You should be able to manually test the `episodes` query in Playground at [http://localhost:4000/](http://localhost:4000/)
 
-- [ ] 4. Replace the mock data using https://rickandmortyapi.com/documentation/#rest.
+- [ ] 3. Replace the mock data using https://rickandmortyapi.com/documentation/#rest.
 
   - You can use the `fetchEpisodes` and `fetchCharacters` defined at the bottom of this file `src/index.js`
-  - You'll need to replace mock data in 3 different places:
+  - You'll need to replace mock data in 2 different places:
     - Query characters
     - Query episodes
-    - Field episodes in the Character type
+
+- [ ] 4. Create a relationship between Episode type and Character type in your schema. Please have a look at the [documentation of the episode endpont](https://rickandmortyapi.com/documentation/#episode-schema) to see how to get the episodes of a given character (heads up! we are calling the field in our Characters `episodes` but the REST API is calling the field that returns an array of episodes as `episode` - singular). Hints
+
+  - You need to add a `Character` key in the resolvers object and an object with an `episodes` key in `Character`. Similar to the Author type and books field in the [documentation](https://www.apollographql.com/docs/apollo-server/essentials/data#resolver-map). Hint: The first argument of the resolver is the 'parent' type, in this case, the parent of the `episodes` field is the `Character`. parent.episode gives you the array of episodes returned from the REST API.
+  - You can filter the episodes in our case using the `mapEpisodeUrlToEpisode` defined at the bottom of this file `src/index.js`.
 
 - [ ] 5. Create a query that returns a single Character given an id. You need to fetch the character using `https://rickandmortyapi.com/documentation/#get-a-single-character`
 
