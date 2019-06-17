@@ -86,19 +86,23 @@ const episodes = [
   }
 ];
 
-function getEpisodeIdFromUrl(url) {
-  return url && url.split("/").pop();
-}
-
-function mapEpisodeUrlToEpisode(episodes, episodeUrl) {
-  return episodes.find(e => e.id == getEpisodeIdFromUrl(episodeUrl));
-}
-
 function fetchEpisodes() {
   // More info about the fetch function? https://github.com/bitinn/node-fetch#json
   return fetch("https://rickandmortyapi.com/api/episode/")
     .then(res => res.json())
     .then(json => json.results);
+}
+
+function fetchEpisodeById(id) {
+  return fetch("https://rickandmortyapi.com/api/episode/" + id)
+    .then(res => res.json())
+    .then(json => json);
+}
+
+function fetchEpisodeByUrl(url) {
+  return fetch(url)
+    .then(res => res.json())
+    .then(json => json);
 }
 
 function fetchCharacters() {
@@ -108,9 +112,16 @@ function fetchCharacters() {
     .then(json => json.results);
 }
 
-function fetchCharacter(id) {
+function fetchCharacterById(id) {
   // More info about the fetch function? https://github.com/bitinn/node-fetch#json
   return fetch("https://rickandmortyapi.com/api/character/" + id)
+    .then(res => res.json())
+    .then(json => json);
+}
+
+function fetchCharacterByUrl(url) {
+  // More info about the fetch function? https://github.com/bitinn/node-fetch#json
+  return fetch(url)
     .then(res => res.json())
     .then(json => json);
 }
