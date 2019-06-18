@@ -103,8 +103,8 @@ const resolvers = {
     // We are only using 1 of the 4 arguments but I want to show you again the resolver function signature :)
     episodes: (parent, args, context, info) => {
       // Heads up! Don't overlook this bit, notice the parent argument in the resolver is the parent Field "Character".
-      // We don't know ahead of time which Character is that one. When this resolver is invoked the parent argument will point
-      // to whatever Character is resolved in the parent Field. Example, in the following query the argument parent will be Rick Sanchez
+      // We don't know ahead of time which Character is that one. When this resolver is invoked the argument `parent` will point
+      // to whatever Character is resolved in the parent Field. Example, in the following query the argument `parent` will be Rick Sanchez
       // Therefore the parent.episode will return ["https://rickandmortyapi.com/api/episode/1","https://rickandmortyapi.com/api/episode/2", ...and_more]
       // Full list of Rick's episodes here https://rickandmortyapi.com/api/character/1
       // query {
