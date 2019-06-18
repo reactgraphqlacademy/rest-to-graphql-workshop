@@ -75,22 +75,23 @@ const resolvers = {
     // This resolves the Field "character" in the Query type
     // Each resolver function has 4 arguments: (parent_object, args, context, info)
     // https://www.apollographql.com/docs/graphql-tools/resolvers/#resolver-function-signature
-    // We only need the second argument and I'm naming the first one with an underscore (_) because we access the arguments by its position
+    // We only need the second argument and I'm naming the first one with an underscore (_),
+    // that's a naming convention that means I'm not using that argument.
     // Feel free to do the same or change the name of the arguments
     character: (_, args) => fetchCharacterById(args.id),
 
     // This resolves the Field "episodes" in the Query type.
-    // Notice we are not using any of the 4 resolver arguments (obj, args, context, info),
-    // I'm only adding them here for you to reinforce they are always there.
+    // Notice we are not using any of the 4 resolver arguments (parent, args, context, info),
+    // I'm only adding them here for you to notice them and reinforce they are always passed on.
     // In this case you could simply do `episodes: () => fetchEpisodes()`
-    episodes: (obj, args, context, info) => fetchEpisodes(),
+    episodes: (parent, args, context, info) => fetchEpisodes(),
 
     // This resolves the Field "episode" in the Query type
-    episode: (obj, args) => fetchEpisodeById(args.id)
+    episode: (parent, args) => fetchEpisodeById(args.id)
   },
   Episode: {
-    characters: obj => {
-      const { characters = [] } = obj;
+    characters: parent => {
+      const { characters = [] } = parent;
       return characters.map(fetchCharacterByUrl);
       // previous function without using JavaScript point free
       // return characters.map(
@@ -100,11 +101,11 @@ const resolvers = {
   },
   Character: {
     // We are only using 1 of the 4 arguments but I want to show you again the resolver function signature :)
-    episodes: (obj, args, context, info) => {
-      // Heads up! Don't overlook this bit, notice the obj argument in the resolver is the parent Field "Character".
-      // We don't know ahead of time which Character is that one. When this resolver is invoked the obj argument will point
-      // to whatever Character is resolved in the parent Field. Example, in the following query the argument obj will be Rick Sanchez
-      // Therefore the obj.episode will return ["https://rickandmortyapi.com/api/episode/1","https://rickandmortyapi.com/api/episode/2", ...and_more]
+    episodes: (parent, args, context, info) => {
+      // Heads up! Don't overlook this bit, notice the parent argument in the resolver is the parent Field "Character".
+      // We don't know ahead of time which Character is that one. When this resolver is invoked the parent argument will point
+      // to whatever Character is resolved in the parent Field. Example, in the following query the argument parent will be Rick Sanchez
+      // Therefore the parent.episode will return ["https://rickandmortyapi.com/api/episode/1","https://rickandmortyapi.com/api/episode/2", ...and_more]
       // Full list of Rick's episodes here https://rickandmortyapi.com/api/character/1
       // query {
       //   character(id:1) {
@@ -114,7 +115,7 @@ const resolvers = {
       //     }
       //   }
       // }
-      const characterEpisodes = obj.episode || [];
+      const characterEpisodes = parent.episode || [];
 
       // Here we map the episode URL and fetch the data from the episode endpoint.
       // There are performance optimizations we are not taking into consideration, performance is not the goal of this exercise.
