@@ -11,10 +11,9 @@ const CHARACTER_TYPE = "Character";
 const EPISODE_TYPE = "Episode";
 
 const typeDefs = gql`
-  # do I need this?
-  # interface Node {
-  #   id: ID!
-  # }
+  interface INode {
+    id: ID!
+  }
 
   union Node = Character | Episode
 
@@ -37,8 +36,8 @@ const typeDefs = gql`
     edges: [CharacterEdge]
   }
 
-  type Character {
-    id: ID
+  type Character implements INode {
+    id: ID!
     name: String
     status: String
     episodes: [Episode]
@@ -67,10 +66,7 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     charactersConnection: async (_, args) => {
-      // give this to students
-      // const pageInfo = {};
-      // const edges = [];
-      // solution first part
+      // partial solution
       // const characters = await fetchCharactersData();
       // const pageInfo = {
       //   hasNextPage: characters.info.next,
