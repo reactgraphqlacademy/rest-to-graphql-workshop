@@ -1,7 +1,42 @@
 const fetch = require("node-fetch");
 const { ApolloServer, gql } = require("apollo-server");
+const {
+  fromGlobalId,
+  toGlobalId,
+  connectionFromArray
+} = require("graphql-relay");
+const mockedCharacters = require("../mocks/characters.json");
+
+const CHARACTER_TYPE = "Character";
+const EPISODE_TYPE = "Episode";
 
 const typeDefs = gql`
+  # do I need this?
+  # interface Node {
+  #   id: ID!
+  # }
+
+  union Node = Character | Episode
+
+  type PageInfo {
+    # https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo.Fields
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    totalCount: Int # this is not part of the Relay specification but it's widely used
+  }
+
+  type CharacterEdge {
+    # https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+    cursor: String!
+    node: Character
+  }
+
+  type CharactersConnection {
+    # https://facebook.github.io/relay/graphql/connections.htm#sec-Connection-Types.Fields
+    pageInfo: PageInfo!
+    edges: [CharacterEdge]
+  }
+
   type Character {
     id: ID
     name: String
@@ -16,7 +51,13 @@ const typeDefs = gql`
   }
 
   type Query {
-    characters: [Character]
+    node(id: String!): Node
+    charactersConnection(
+      first: Int
+      after: String
+      last: Int
+      before: String
+    ): CharactersConnection
     character(id: Int): Character
     episodes: [Episode]
     episode(id: Int): Episode
@@ -25,7 +66,32 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    characters: () => fetchCharacters(),
+    charactersConnection: async (_, args) => {
+      // give this to students
+      // const pageInfo = {};
+      // const edges = [];
+      // solution first part
+      // const characters = await fetchCharactersData();
+      // const pageInfo = {
+      //   hasNextPage: characters.info.next,
+      //   hasPreviousPage: characters.info.prev,
+      //   totalCount: characters.info.count
+      // };
+      // const edges = characters.results.map(node => ({
+      //   node,
+      //   cursor: "" // current page + id + next page
+      // }));
+      // return { edges, pageInfo };
+      const characters = connectionFromArray(mockedCharacters, args);
+      return {
+        ...characters,
+        pageInfo: {
+          ...characters.pageInfo,
+          totalCount: mockedCharacters.length
+        }
+      };
+    },
+    node: (_, { id }) => getObjectById(fromGlobalId(id)),
     character: (_, args) => fetchCharacterById(args.id),
     episodes: () => fetchEpisodes(),
     episode: (_, args) => fetchEpisodeById(args.id)
@@ -37,9 +103,22 @@ const resolvers = {
     }
   },
   Character: {
+    id: parent => toGlobalId(CHARACTER_TYPE, parent.id),
     episodes: parent => {
       const characterEpisodes = parent.episode || [];
       return characterEpisodes.map(fetchEpisodeByUrl);
+    }
+  },
+  Node: {
+    __resolveType(obj) {
+      if (obj.episode) {
+        return CHARACTER_TYPE;
+      }
+      if (obj.character) {
+        return EPISODE_TYPE;
+      }
+
+      return null;
     }
   }
 };
@@ -50,10 +129,18 @@ server.listen().then(({ url }) => {
   console.log(`🚀  Server ready at ${url}`);
 });
 
-function fetchEpisodes() {
-  return fetch("https://rickandmortyapi.com/api/episode/")
-    .then(res => res.json())
-    .then(json => json.results);
+function getObjectById({ type, id }) {
+  const types = {
+    Character: fetchCharacterById
+  };
+
+  return types[type](id);
+}
+
+function fetchEpisodesData() {
+  return fetch("https://rickandmortyapi.com/api/episode/").then(res =>
+    res.json()
+  );
 }
 
 function fetchEpisodeById(id) {
@@ -68,10 +155,10 @@ function fetchEpisodeByUrl(url) {
     .then(json => json);
 }
 
-function fetchCharacters() {
-  return fetch("https://rickandmortyapi.com/api/character/")
-    .then(res => res.json())
-    .then(json => json.results);
+function fetchCharactersData() {
+  return fetch("https://rickandmortyapi.com/api/character/").then(res =>
+    res.json()
+  );
 }
 
 function fetchCharacterById(id) {
