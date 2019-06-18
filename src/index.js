@@ -87,7 +87,10 @@ const resolvers = {
     episodes: (parent, args, context, info) => fetchEpisodes(),
 
     // This resolves the Field "episode" in the Query type
-    episode: (parent, args) => fetchEpisodeById(args.id)
+    // We only need the second argument and I'm naming the first one with an underscore (_),
+    // that's a naming convention that means I'm not using that argument.
+    // Feel free to do the same or change the name of the arguments
+    episode: (_, args) => fetchEpisodeById(args.id)
   },
   Episode: {
     characters: parent => {
