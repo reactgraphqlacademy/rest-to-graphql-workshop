@@ -4,9 +4,9 @@ This exercise is part of the [React GraphQL Academy](http://reactgraphql.academy
 
 ## Learning objectives
 
-- Thinking in Graphs
-- Learn how to connect resolvers to a REST API
-- Understand Schema Design principles
+- Understand the main functionalities and responsibilities of a GraphQL server
+- Learn how to migrate an existent REST API to GraphQL and start “thinking in graphs”
+- Start identifying potential problems when running real-world GraphQL APIs
 
 ## Exercise part 1
 
